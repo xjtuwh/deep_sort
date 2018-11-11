@@ -1,0 +1,30 @@
+1.Running the tracker
+在MOT16数据集上启动跟踪器，检测结果已经生成
+python deep_sort_app.py \
+    --sequence_dir=/media/hp/01a64147-0526-48e6-803a-383ca12a7cad/DataSet/MOT/MOT16/test/MOT16-06
+    --detection_file=/media/hp/01a64147-0526-48e6-803a-383ca12a7cad/WH/TRACK/MOT/deep_sort/resources/detections/MOT16_test/MOT16-06.npy \  使用下面生成的MOT16-06.npy
+    --min_confidence=0.3 \
+    --nn_budget=100 \
+    --display=True
+
+--sequence_dir=/media/hp/01a64147-0526-48e6-803a-383ca12a7cad/DataSet/MOT/MOT16/test/MOT16-06  --detection_file=/media/hp/01a64147-0526-48e6-803a-383ca12a7cad/WH/TRACK/MOT/deep_sort/resources/detections/MOT16_test/MOT16-06.npy --min_confidence=0.3 --nn_budget=100 --display=True
+
+2.Generating detections
+生成检测结果，每个序列的二进制文件
+python tools/generate_detections.py --model=/media/hp/01a64147-0526-48e6-803a-383ca12a7cad/WH/TRACK/MOT/deep_sort/resources/networks/mars-small128.pb  --mot_dir=/media/hp/01a64147-0526-48e6-803a-383ca12a7cad/DataSet/MOT/MOT16/train  --output_dir=/media/hp/01a64147-0526-48e6-803a-383ca12a7cad/WH/TRACK/MOT/deep_sort/resources/detections/MOT16_train
+
+--model=/media/hp/01a64147-0526-48e6-803a-383ca12a7cad/WH/TRACK/MOT/deep_sort/resources/networks/mars-small128.pb  --mot_dir=/media/hp/01a64147-0526-48e6-803a-383ca12a7cad/DataSet/MOT/MOT16/test  --output_dir=/media/hp/01a64147-0526-48e6-803a-383ca12a7cad/WH/TRACK/MOT/deep_sort/resources/detections/MOT16_test
+
+3.训练模型
+使用余弦度量学习
+
+4.源代码
+执行，评估，可视化跟踪器，主文件是deep_sort_app.py.在MOTchallenge视频序列上进行测试。
+主要代码：
+detection.py:检测基本类型。
+kalman_filter.py:进行卡尔曼滤波，图像空间滤波的参数化
+linear_assignment.py：线性分配，模型包含最小损失匹配和级联匹配的代码（匈牙利算法）
+iou_matching.py:计算IOU
+nn_matching.py:最近邻匹配度量模块
+track.py:跟踪类包含单目标跟踪数据，例如：卡尔曼状态，命中次数，命中率，命中率，关联的特征向量等
+tracker.py:多目标跟踪类
